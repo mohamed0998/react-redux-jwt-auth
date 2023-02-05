@@ -33,9 +33,7 @@ const App = (props) => {
   
     useEffect(() => {
       const user = props.user;
-      
       if (user) {
-        console.log(user);
         setcurrentUser(user)
         setshowModeratorBoard(user.roles.includes("ROLE_MODERATOR"))
         setshowAdminBoard(user.roles.includes("ROLE_ADMIN"))
@@ -133,6 +131,7 @@ const App = (props) => {
               </div>
             )}
           </nav>
+          
 
           <div className="container mt-3">
             <Switch>
@@ -146,7 +145,7 @@ const App = (props) => {
             </Switch>
           </div>
 
-          {/* <AuthVerify logOut={this.logOut}/> */}
+         
         </div>
       </Router>
     );

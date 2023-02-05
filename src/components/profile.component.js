@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import { Redirect } from 'react-router-dom';
 import { connect } from "react-redux";
 
-class Profile extends Component {
+const Profile = (props) => {
 
-  render() {
-    const { user: currentUser } = this.props;
+ 
+    const { user: currentUser } = props;
 
     if (!currentUser) {
       return <Redirect to="/login" />;
@@ -36,7 +36,7 @@ class Profile extends Component {
       </div>
     );
   }
-}
+
 
 function mapStateToProps(state) {
   const { user } = state.auth;

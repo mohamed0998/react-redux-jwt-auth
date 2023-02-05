@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useRef } from "react";
 import { Redirect } from 'react-router-dom';
 
 import Form from "react-validation/build/form";
@@ -18,63 +18,50 @@ const required = (value) => {
   }
 };
 
-class Login extends Component {
-  constructor(props) {
-    super(props);
-    this.handleLogin = this.handleLogin.bind(this);
-    this.onChangeUsername = this.onChangeUsername.bind(this);
-    this.onChangePassword = this.onChangePassword.bind(this);
+const Login = (props) => {
+  const form = useRef();
+  const checkBtn = useRef();
 
-    this.state = {
-      username: "",
-      password: "",
-      loading: false,
-    };
-  }
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  onChangeUsername(e) {
-    this.setState({
-      username: e.target.value,
-    });
-  }
+  const onChangeUsername = (e) => {
+    const username = e.target.value;
+    setUsername(username);
+  };
 
-  onChangePassword(e) {
-    this.setState({
-      password: e.target.value,
-    });
-  }
+  const onChangePassword = (e) => {
+    const password = e.target.value;
+    setPassword(password);
+  };
+  
 
-  handleLogin(e) {
+  const handleLogin = (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    this.setState({
-      loading: true,
-    });
+    form.current.validateAll();
+    const { dispatch, history } = props;
 
-    this.form.validateAll();
+    
 
-    const { dispatch, history } = this.props;
-
-    if (this.checkBtn.context._errors.length === 0) {
-      dispatch(login(this.state.username, this.state.password))
+    if (checkBtn.current.context._errors.length === 0) {
+      dispatch(login(username, password))
         .then(() => {
           history.push("/profile");
           window.location.reload();
         })
         .catch(() => {
-          this.setState({
-            loading: false
-          });
+          setLoading(false);
         });
     } else {
-      this.setState({
-        loading: false,
-      });
+      setLoading(false);
     }
   }
 
-  render() {
-    const { isLoggedIn, message } = this.props;
+ 
+    const { isLoggedIn, message } = props;
 
     if (isLoggedIn) {
       return <Redirect to="/profile" />;
@@ -90,10 +77,8 @@ class Login extends Component {
           />
 
           <Form
-            onSubmit={this.handleLogin}
-            ref={(c) => {
-              this.form = c;
-            }}
+            onSubmit={handleLogin}
+            ref={form}
           >
             <div className="form-group">
               <label htmlFor="username">Username</label>
@@ -101,8 +86,8 @@ class Login extends Component {
                 type="text"
                 className="form-control"
                 name="username"
-                value={this.state.username}
-                onChange={this.onChangeUsername}
+                value={username}
+                onChange={onChangeUsername}
                 validations={[required]}
               />
             </div>
@@ -113,8 +98,8 @@ class Login extends Component {
                 type="password"
                 className="form-control"
                 name="password"
-                value={this.state.password}
-                onChange={this.onChangePassword}
+                value={password}
+                onChange={onChangePassword}
                 validations={[required]}
               />
             </div>
@@ -122,9 +107,9 @@ class Login extends Component {
             <div className="form-group">
               <button
                 className="btn btn-primary btn-block"
-                disabled={this.state.loading}
+                disabled={loading}
               >
-                {this.state.loading && (
+                {loading && (
                   <span className="spinner-border spinner-border-sm"></span>
                 )}
                 <span>Login</span>
@@ -140,15 +125,13 @@ class Login extends Component {
             )}
             <CheckButton
               style={{ display: "none" }}
-              ref={(c) => {
-                this.checkBtn = c;
-              }}
+              ref={checkBtn}
             />
           </Form>
         </div>
       </div>
     );
-  }
+  
 }
 
 function mapStateToProps(state) {
